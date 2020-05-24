@@ -28,10 +28,11 @@ public class ManagementResource {
   @Path("/health")
   @Produces(MediaType.APPLICATION_JSON)
   public Response health() {
-    final var status = macOuiService.lookup("00-00-00")
-        .map(macOui -> Status.NO_CONTENT)
-        .orElse(Status.SERVICE_UNAVAILABLE);
+    final var status =
+        macOuiService
+            .lookup("00-00-00")
+            .map(macOui -> Status.NO_CONTENT)
+            .orElse(Status.SERVICE_UNAVAILABLE);
     return Response.status(status).build();
   }
-
 }

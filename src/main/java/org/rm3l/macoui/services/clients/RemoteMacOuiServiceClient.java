@@ -8,5 +8,4 @@ public interface RemoteMacOuiServiceClient {
 
   @NotNull
   Set<MacOui> fetchData();
-
 }

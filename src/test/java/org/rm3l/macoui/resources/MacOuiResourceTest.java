@@ -8,20 +8,13 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 public class MacOuiResourceTest {
 
-    @Test
-    public void testPingEndpoint() {
-        given()
-          .when().get("/management/ping")
-          .then()
-             .statusCode(204);
-    }
+  @Test
+  public void testPingEndpoint() {
+    given().when().get("/management/ping").then().statusCode(204);
+  }
 
-    @Test
-    public void testHealthEndpoint() {
-        given()
-            .when().get("/management/health")
-            .then()
-            .statusCode(204);
-    }
-
+  @Test
+  public void testHealthEndpoint() {
+    given().when().get("/management/health").then().statusCode(204);
+  }
 }

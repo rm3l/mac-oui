@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
@@ -29,8 +28,7 @@ public class MacOuiService {
 
   private final Set<MacOui> database;
 
-  public MacOuiService(
-      Instance<RemoteMacOuiServiceClient> remoteMacOuiServiceClients) {
+  public MacOuiService(Instance<RemoteMacOuiServiceClient> remoteMacOuiServiceClients) {
     this.database = Collections.synchronizedSet(new HashSet<>());
     this.remoteMacOuiServiceClients = remoteMacOuiServiceClients;
   }
@@ -43,17 +41,18 @@ public class MacOuiService {
   void scheduleDatabaseUpdate() {
     final var start = System.nanoTime();
     logger.info("Updating local database...");
-    remoteMacOuiServiceClients
-        .stream()
+    remoteMacOuiServiceClients.stream()
         .peek(remoteMacOuiServiceClient -> logger.debug("Using {}", remoteMacOuiServiceClient))
         .map(RemoteMacOuiServiceClient::fetchData)
         .filter(Predicate.not(Collection::isEmpty))
-        .forEach(macOuiSet -> {
-          synchronized (database) {
-            database.addAll(macOuiSet);
-          }
-        });
-    logger.info("... done updating local database in {} ms",
+        .forEach(
+            macOuiSet -> {
+              synchronized (database) {
+                database.addAll(macOuiSet);
+              }
+            });
+    logger.info(
+        "... done updating local database in {} ms",
         TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
   }
 
@@ -65,22 +64,23 @@ public class MacOuiService {
     final var filterPrefix = filterSanitized.substring(0, 6);
     return database.stream()
         .filter(Objects::nonNull)
-        .filter(macOui -> {
-          if (filter.equalsIgnoreCase(macOui.getPrefix())) {
-            return true;
-          }
+        .filter(
+            macOui -> {
+              if (filter.equalsIgnoreCase(macOui.getPrefix())) {
+                return true;
+              }
 
-          if (macOui.getPrefix() != null) {
-            return sanitizeMac(macOui.getPrefix()).toLowerCase()
-                .startsWith(filterPrefix.toLowerCase());
-          }
-          return false;
-        })
+              if (macOui.getPrefix() != null) {
+                return sanitizeMac(macOui.getPrefix())
+                    .toLowerCase()
+                    .startsWith(filterPrefix.toLowerCase());
+              }
+              return false;
+            })
         .findAny();
   }
 
   private String sanitizeMac(@NotNull final String mac) {
     return mac.replaceAll("-", "").replaceAll(":", "");
   }
-
 }

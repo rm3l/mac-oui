@@ -6,5 +6,5 @@ import org.rm3l.macoui.resources.management.MacOuiManagementResourceTest;
 @NativeImageTest
 public class NativeMacOuiResourceIT extends MacOuiManagementResourceTest {
 
-    // Execute the same tests but in native mode.
+  // Execute the same tests but in native mode.
 }

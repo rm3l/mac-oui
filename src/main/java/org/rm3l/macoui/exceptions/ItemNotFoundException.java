@@ -5,8 +5,7 @@ import javax.ws.rs.core.Response.Status;
 
 public class ItemNotFoundException extends MacOuiException {
 
-  public ItemNotFoundException() {
-  }
+  public ItemNotFoundException() {}
 
   public ItemNotFoundException(String message) {
     super(message);
@@ -20,8 +19,8 @@ public class ItemNotFoundException extends MacOuiException {
     super(cause);
   }
 
-  public ItemNotFoundException(String message, Throwable cause, boolean enableSuppression,
-      boolean writableStackTrace) {
+  public ItemNotFoundException(
+      String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 

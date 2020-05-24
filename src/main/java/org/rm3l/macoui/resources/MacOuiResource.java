@@ -16,40 +16,40 @@ import org.rm3l.macoui.services.data.MacOui;
 @Path("/")
 public class MacOuiResource {
 
-    @Inject
-    MacOuiService macOuiService;
+  @Inject MacOuiService macOuiService;
 
-    @GET
-    @Path("/{macAddressOrPrefix}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public MacOuiResourceResponse lookup(@PathParam("macAddressOrPrefix") String macAddressOrPrefix) {
-        return getMacOuiResourceResponse(macAddressOrPrefix);
+  @GET
+  @Path("/{macAddressOrPrefix}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public MacOuiResourceResponse lookup(@PathParam("macAddressOrPrefix") String macAddressOrPrefix) {
+    return getMacOuiResourceResponse(macAddressOrPrefix);
+  }
+
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public MacOuiResourceResponse lookupByMac(@QueryParam("mac") String mac) {
+    return getMacOuiResourceResponse(mac);
+  }
+
+  private MacOuiResourceResponse getMacOuiResourceResponse(@NotNull String macAddressOrPrefix) {
+    return macOuiService
+        .lookup(macAddressOrPrefix)
+        .map(macOui -> new MacOuiResourceResponse().setData(macOui))
+        .orElseThrow(() -> new ItemNotFoundException("Not found: " + macAddressOrPrefix));
+  }
+
+  @JsonbNillable
+  public static class MacOuiResourceResponse {
+
+    private MacOui data;
+
+    public MacOui getData() {
+      return data;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public MacOuiResourceResponse lookupByMac(@QueryParam("mac") String mac) {
-        return getMacOuiResourceResponse(mac);
+    public MacOuiResourceResponse setData(MacOui data) {
+      this.data = data;
+      return this;
     }
-
-    private MacOuiResourceResponse getMacOuiResourceResponse(@NotNull String macAddressOrPrefix) {
-        return macOuiService.lookup(macAddressOrPrefix)
-            .map(macOui -> new MacOuiResourceResponse().setData(macOui))
-            .orElseThrow(() -> new ItemNotFoundException("Not found: " + macAddressOrPrefix));
-    }
-
-    @JsonbNillable
-    public static class MacOuiResourceResponse {
-
-        private MacOui data;
-
-        public MacOui getData() {
-            return data;
-        }
-
-        public MacOuiResourceResponse setData(MacOui data) {
-            this.data = data;
-            return this;
-        }
-    }
+  }
 }

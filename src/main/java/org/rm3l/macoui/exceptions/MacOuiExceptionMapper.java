@@ -17,9 +17,7 @@ public class MacOuiExceptionMapper implements ExceptionMapper<Exception> {
       code = 400;
     }
     return Response.status(code)
-        .entity(Map.of(
-            "error", exception.getMessage(),
-            "code", code))
+        .entity(Map.of("error", exception.getMessage(), "code", code))
         .build();
   }
 }

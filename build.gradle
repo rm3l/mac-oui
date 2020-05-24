@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "com.diffplug.gradle.spotless" version "4.0.1"
     id 'io.quarkus'
 }
 
@@ -9,6 +10,10 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation 'io.quarkus:quarkus-jsonb'
+    implementation 'io.quarkus:quarkus-jsonb'
+    implementation 'io.quarkus:quarkus-scheduler'
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-kubernetes'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
@@ -37,4 +42,10 @@ java {
 
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
 }

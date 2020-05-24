@@ -5,8 +5,7 @@ import javax.ws.rs.core.Response.Status;
 
 public class MacOuiException extends RuntimeException {
 
-  public MacOuiException() {
-  }
+  public MacOuiException() {}
 
   public MacOuiException(String message) {
     super(message);
@@ -20,8 +19,8 @@ public class MacOuiException extends RuntimeException {
     super(cause);
   }
 
-  public MacOuiException(String message, Throwable cause, boolean enableSuppression,
-      boolean writableStackTrace) {
+  public MacOuiException(
+      String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 
