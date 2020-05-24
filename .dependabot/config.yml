@@ -1,0 +1,18 @@
+version: 1
+update_configs:
+  - package_manager: "java:gradle"
+    directory: "/"
+    update_schedule: "weekly"
+    default_reviewers:
+      - "rm3l"
+    default_labels:
+      - "dependencies"
+
+  - package_manager: "docker"
+    directory: "/src/main/docker"
+    update_schedule: "weekly"
+    default_reviewers:
+      - "rm3l"
+    default_labels:
+      - "dependencies"
+
