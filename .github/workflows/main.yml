@@ -62,7 +62,7 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: Build with Gradle
-      run: ./gradlew build --stacktrace -x test # Tests skipped until this issue is fixed (Quarkus 1.5.0) : https://github.com/quarkusio/quarkus/issues/9175
+      run: ./gradlew build --stacktrace
 
   docker:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
