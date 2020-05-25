@@ -23,14 +23,15 @@ package org.rm3l.macoui.services;
 
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
@@ -47,10 +48,10 @@ public class MacOuiService {
 
   Instance<RemoteMacOuiServiceClient> remoteMacOuiServiceClients;
 
-  private final Set<MacOui> database;
+  private final Map<String, MacOui> database;
 
   public MacOuiService(Instance<RemoteMacOuiServiceClient> remoteMacOuiServiceClients) {
-    this.database = Collections.synchronizedSet(new HashSet<>());
+    this.database = Collections.synchronizedMap(new HashMap<>());
     this.remoteMacOuiServiceClients = remoteMacOuiServiceClients;
   }
 
@@ -58,18 +59,38 @@ public class MacOuiService {
     this.scheduleDatabaseUpdate();
   }
 
+  @SuppressWarnings("unchecked")
   @Scheduled(cron = "{mac-oui.database.updateFrequency}")
   void scheduleDatabaseUpdate() {
     final var start = System.nanoTime();
     logger.info("Updating local database...");
     remoteMacOuiServiceClients.stream()
+        .parallel()
         .peek(remoteMacOuiServiceClient -> logger.debug("Using {}", remoteMacOuiServiceClient))
-        .map(RemoteMacOuiServiceClient::fetchData)
-        .filter(Predicate.not(Collection::isEmpty))
+        .map(
+            remoteMacOuiServiceClient ->
+                new Object[] {remoteMacOuiServiceClient, remoteMacOuiServiceClient.fetchData()})
         .forEach(
-            macOuiSet -> {
+            serviceAndMacOuiSet -> {
+              final var remoteMacOuiServiceClient = serviceAndMacOuiSet[0];
+              if (serviceAndMacOuiSet[1] == null) {
+                return;
+              }
+              final var macOuiSet = (Set<MacOui>) serviceAndMacOuiSet[1];
+              logger.debug("{} returned {} records", remoteMacOuiServiceClient, macOuiSet.size());
+              if (macOuiSet.size() == 0) {
+                return;
+              }
               synchronized (database) {
-                database.addAll(macOuiSet);
+                database.putAll(
+                    macOuiSet.stream()
+                        .filter(Objects::nonNull)
+                        .filter(
+                            macOui -> macOui.getPrefix() != null && !macOui.getPrefix().isBlank())
+                        .collect(
+                            Collectors.toMap(
+                                macOui -> sanitizeMac(macOui.getPrefix()).toLowerCase(),
+                                Function.identity())));
               }
             });
     logger.info(
@@ -83,22 +104,7 @@ public class MacOuiService {
       throw new IllegalArgumentException("Invalid MAC filter data: '" + filter + "'");
     }
     final var filterPrefix = filterSanitized.substring(0, 6);
-    return database.stream()
-        .filter(Objects::nonNull)
-        .filter(
-            macOui -> {
-              if (filter.equalsIgnoreCase(macOui.getPrefix())) {
-                return true;
-              }
-
-              if (macOui.getPrefix() != null) {
-                return sanitizeMac(macOui.getPrefix())
-                    .toLowerCase()
-                    .startsWith(filterPrefix.toLowerCase());
-              }
-              return false;
-            })
-        .findAny();
+    return Optional.ofNullable(database.get(filterPrefix.toLowerCase()));
   }
 
   private String sanitizeMac(@NotNull final String mac) {
