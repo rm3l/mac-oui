@@ -30,12 +30,12 @@ import org.junit.jupiter.api.Test;
 public class MacOuiResourceTest {
 
   @Test
-  public void testPingEndpoint() {
-    given().when().get("/management/ping").then().statusCode(204);
+  public void testLivenessHealthEndpoint() {
+    given().when().get("/health/live").then().statusCode(200);
   }
 
   @Test
-  public void testHealthEndpoint() {
-    given().when().get("/management/health").then().statusCode(204);
+  public void testReadinessHealthEndpoint() {
+    given().when().get("/health/ready").then().statusCode(200);
   }
 }

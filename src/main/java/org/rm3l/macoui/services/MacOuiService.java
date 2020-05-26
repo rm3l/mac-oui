@@ -36,6 +36,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.validation.constraints.NotNull;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Readiness;
 import org.rm3l.macoui.services.clients.RemoteMacOuiServiceClient;
 import org.rm3l.macoui.services.data.MacOui;
 import org.slf4j.Logger;
@@ -55,47 +58,58 @@ public class MacOuiService {
     this.remoteMacOuiServiceClients = remoteMacOuiServiceClients;
   }
 
+  // This is to make sure the database is filled at least once at startup
   void startup(@Observes StartupEvent startupEvent) {
     this.scheduleDatabaseUpdate();
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "unused"})
   @Scheduled(cron = "{mac-oui.database.updateFrequency}")
   void scheduleDatabaseUpdate() {
     final var start = System.nanoTime();
-    logger.info("Updating local database...");
-    remoteMacOuiServiceClients.stream()
-        .parallel()
-        .peek(remoteMacOuiServiceClient -> logger.debug("Using {}", remoteMacOuiServiceClient))
-        .map(
-            remoteMacOuiServiceClient ->
-                new Object[] {remoteMacOuiServiceClient, remoteMacOuiServiceClient.fetchData()})
-        .forEach(
-            serviceAndMacOuiSet -> {
-              final var remoteMacOuiServiceClient = serviceAndMacOuiSet[0];
-              if (serviceAndMacOuiSet[1] == null) {
-                return;
-              }
-              final var macOuiSet = (Set<MacOui>) serviceAndMacOuiSet[1];
-              logger.debug("{} returned {} records", remoteMacOuiServiceClient, macOuiSet.size());
-              if (macOuiSet.size() == 0) {
-                return;
-              }
-              synchronized (database) {
-                database.putAll(
-                    macOuiSet.stream()
-                        .filter(Objects::nonNull)
-                        .filter(
-                            macOui -> macOui.getPrefix() != null && !macOui.getPrefix().isBlank())
-                        .collect(
-                            Collectors.toMap(
-                                macOui -> sanitizeMac(macOui.getPrefix()).toLowerCase(),
-                                Function.identity())));
-              }
-            });
     logger.info(
-        "... done updating local database in {} ms",
-        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
+        "Updating local database using {} RemoteMacOuiServiceClients...",
+        remoteMacOuiServiceClients.stream().count());
+    try {
+      remoteMacOuiServiceClients.stream()
+          .parallel()
+          .peek(remoteMacOuiServiceClient -> logger.debug("Using {}", remoteMacOuiServiceClient))
+          .map(
+              remoteMacOuiServiceClient ->
+                  new Object[] {remoteMacOuiServiceClient, remoteMacOuiServiceClient.fetchData()})
+          .forEach(
+              serviceAndMacOuiSet -> {
+                final var remoteMacOuiServiceClient = serviceAndMacOuiSet[0];
+                if (serviceAndMacOuiSet[1] == null) {
+                  return;
+                }
+                final var macOuiSet = (Set<MacOui>) serviceAndMacOuiSet[1];
+                logger.debug("{} returned {} records", remoteMacOuiServiceClient, macOuiSet.size());
+                if (macOuiSet.size() == 0) {
+                  return;
+                }
+                synchronized (database) {
+                  database.putAll(
+                      macOuiSet.stream()
+                          .filter(Objects::nonNull)
+                          .filter(
+                              macOui -> macOui.getPrefix() != null && !macOui.getPrefix().isBlank())
+                          .collect(
+                              Collectors.toMap(
+                                  macOui -> sanitizeMac(macOui.getPrefix()).toLowerCase(),
+                                  Function.identity())));
+                }
+              });
+    } catch (final Exception e) {
+      logger.warn(
+          "An error occurred while attempting to update local database: {}. Will try again later.",
+          e.getMessage(),
+          e);
+    } finally {
+      logger.info(
+          "... done updating local database in {} ms",
+          TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
+    }
   }
 
   public Optional<MacOui> lookup(@NotNull final String filter) {
@@ -104,10 +118,42 @@ public class MacOuiService {
       throw new IllegalArgumentException("Invalid MAC filter data: '" + filter + "'");
     }
     final var filterPrefix = filterSanitized.substring(0, 6);
-    return Optional.ofNullable(database.get(filterPrefix.toLowerCase()));
+    synchronized (database) {
+      return Optional.ofNullable(database.get(filterPrefix.toLowerCase()));
+    }
   }
 
   private String sanitizeMac(@NotNull final String mac) {
     return mac.replaceAll("-", "").replaceAll(":", "");
+  }
+
+  @ApplicationScoped
+  @Readiness
+  public static class HealthProbe implements HealthCheck {
+
+    private static final String HEALTH_CHECK_MAC_ADDR_PREFIX = "00-00-00";
+    final Logger logger = LoggerFactory.getLogger(HealthProbe.class);
+
+    MacOuiService macOuiService;
+
+    HealthProbe(MacOuiService macOuiService) {
+      this.macOuiService = macOuiService;
+    }
+
+    @Override
+    public HealthCheckResponse call() {
+      logger.info("Readiness check on {}", this);
+      final var healthCheckResponseBuilder = HealthCheckResponse.named("mac-oui-lookup");
+      final var lookup = macOuiService.lookup(HEALTH_CHECK_MAC_ADDR_PREFIX);
+      if (lookup.isPresent()) {
+        healthCheckResponseBuilder.up();
+      } else {
+        healthCheckResponseBuilder
+            .down()
+            .withData(
+                "error", "Could not find any data for MAC prefix: " + HEALTH_CHECK_MAC_ADDR_PREFIX);
+      }
+      return healthCheckResponseBuilder.build();
+    }
   }
 }

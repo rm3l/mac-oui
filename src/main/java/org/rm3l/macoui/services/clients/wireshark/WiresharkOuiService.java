@@ -26,13 +26,18 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.constraints.NotNull;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Liveness;
 import org.rm3l.macoui.exceptions.MacOuiException;
 import org.rm3l.macoui.services.clients.RemoteMacOuiServiceClient;
 import org.rm3l.macoui.services.data.MacOui;
@@ -41,9 +46,9 @@ import org.rm3l.macoui.services.data.MacOui;
 @ApplicationScoped
 public class WiresharkOuiService implements RemoteMacOuiServiceClient {
 
-  private static final String DATA_URL = "https://gitlab.com/wireshark/wireshark/raw/master/manuf";
+  static final String DATA_URL = "https://gitlab.com/wireshark/wireshark/raw/master/manuf";
 
-  private HttpClient httpClient;
+  HttpClient httpClient;
 
   @PostConstruct
   void init() {
@@ -95,6 +100,47 @@ public class WiresharkOuiService implements RemoteMacOuiServiceClient {
           .collect(Collectors.toSet());
     } catch (IOException | InterruptedException e) {
       throw new MacOuiException(e);
+    }
+  }
+
+  @ApplicationScoped
+  @Liveness
+  public static class HealthProbe implements HealthCheck {
+
+    WiresharkOuiService wiresharkOuiService;
+
+    HttpClient healthHttpClient;
+
+    public HealthProbe(WiresharkOuiService wiresharkOuiService) {
+      this.wiresharkOuiService = wiresharkOuiService;
+    }
+
+    @PostConstruct
+    void init() {
+      this.healthHttpClient = HttpClient.newBuilder().followRedirects(Redirect.NORMAL).build();
+    }
+
+    @Override
+    public HealthCheckResponse call() {
+      final var responseBuilder = HealthCheckResponse.named("wireshark");
+      try {
+        final var headRequest =
+            HttpRequest.newBuilder()
+                .method("HEAD", BodyPublishers.noBody())
+                .uri(URI.create(DATA_URL))
+                .timeout(Duration.ofSeconds(5))
+                .build();
+        final var statusCode =
+            healthHttpClient.send(headRequest, BodyHandlers.discarding()).statusCode();
+        if (statusCode < 200 || statusCode > 299) {
+          responseBuilder.down().withData("status_code", statusCode);
+        } else {
+          responseBuilder.up();
+        }
+      } catch (final Exception e) {
+        responseBuilder.down().withData("error", e.getMessage());
+      }
+      return responseBuilder.build();
     }
   }
 }
