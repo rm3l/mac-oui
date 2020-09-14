@@ -22,23 +22,36 @@
 package org.rm3l.macoui.exceptions;
 
 import java.util.Map;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Provider
 public class MacOuiExceptionMapper implements ExceptionMapper<Exception> {
+
+  private static final Logger logger = LoggerFactory.getLogger(MacOuiExceptionMapper.class);
 
   @Override
   public Response toResponse(Exception exception) {
     int code = 500;
     if (exception instanceof MacOuiException) {
       code = ((MacOuiException) exception).status().getStatusCode();
-    } else if (exception instanceof IllegalArgumentException) {
+    } else if (exception instanceof IllegalArgumentException
+        || exception instanceof BadRequestException) {
       code = 400;
+    } else if (exception instanceof NotFoundException) {
+      code = 404;
     }
-    return Response.status(code)
-        .entity(Map.of("error", exception.getMessage(), "code", code))
-        .build();
+    final var rootCauseMessage = ExceptionUtils.getRootCauseMessage(exception);
+    logger.info("Exception caught: {} {}", exception.getClass(), rootCauseMessage);
+    if (logger.isDebugEnabled()) {
+      logger.debug(exception.getMessage(), exception);
+    }
+    return Response.status(code).entity(Map.of("code", code, "error", rootCauseMessage)).build();
   }
 }
