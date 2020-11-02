@@ -20,10 +20,15 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+
 plugins {
     id 'java'
     id "com.diffplug.spotless" version "5.7.0"
-    id 'io.quarkus'
+    id 'io.quarkus' version "1.8.1.Final"
+}
+
+ext {
+    quarkusVersion = '1.8.1.Final'
 }
 
 repositories {
@@ -40,7 +45,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-scheduler'
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-kubernetes'
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
 
     testImplementation 'io.quarkus:quarkus-junit5'
