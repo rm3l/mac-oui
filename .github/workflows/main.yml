@@ -41,7 +41,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Set up GraalVM
-      uses: DeLaGuardo/setup-graalvm@latest
+      uses: DeLaGuardo/setup-graalvm@master
       with:
         graalvm-version: '20.1.0.java11'
         
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up GraalVM
-        uses: DeLaGuardo/setup-graalvm@latest
+        uses: DeLaGuardo/setup-graalvm@master
         with:
           graalvm-version: '20.1.0.java11'
         
