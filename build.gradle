@@ -28,7 +28,7 @@ plugins {
 }
 
 ext {
-    quarkusVersion = '1.9.1.Final'
+    quarkusVersion = '1.9.2.Final'
 }
 
 repositories {
