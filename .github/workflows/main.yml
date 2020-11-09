@@ -44,7 +44,7 @@ jobs:
       uses: DeLaGuardo/setup-graalvm@master
       with:
         graalvm-version: '20.1.0.java11'
-        
+
     - name: Install native-image
       run: gu install native-image
 
@@ -77,11 +77,24 @@ jobs:
 
       - uses: actions/checkout@v2
 
+      - name: Login to GitHub Packages Docker Registry
+        uses: docker/login-action@v1
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GH_PACKAGES_TOKEN }}
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
       - name: Set up GraalVM
         uses: DeLaGuardo/setup-graalvm@master
         with:
           graalvm-version: '20.1.0.java11'
-        
+
       - name: Install native-image
         run: gu install native-image
 
@@ -105,16 +118,16 @@ jobs:
 
       - name: Push Docker image (tag) to Docker Hub
         if: startsWith(github.ref, 'refs/tags/')
-        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=${{ steps.refvar.outputs.gitRefName }} -Dquarkus.container-image.registry=registry.hub.docker.com -Dquarkus.container-image.username="${{ secrets.DOCKER_HUB_USERNAME }}" -Dquarkus.container-image.password="${{ secrets.DOCKER_HUB_PASSWORD }}"
+        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=${{ steps.refvar.outputs.gitRefName }} -Dquarkus.container-image.registry=registry.hub.docker.com"
 
       - name: Push latest Docker image (master) to Docker Hub
         if: github.ref == 'refs/heads/master'
-        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=latest -Dquarkus.container-image.registry=registry.hub.docker.com -Dquarkus.container-image.username="${{ secrets.DOCKER_HUB_USERNAME }}" -Dquarkus.container-image.password="${{ secrets.DOCKER_HUB_PASSWORD }}"
+        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=latest -Dquarkus.container-image.registry=registry.hub.docker.com"
 
       - name: Push Docker image (tag) to GitHub Packages
         if: startsWith(github.ref, 'refs/tags/')
-        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l/rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=${{ steps.refvar.outputs.gitRefName }} -Dquarkus.container-image.registry=docker.pkg.github.com -Dquarkus.container-image.username="rm3l" -Dquarkus.container-image.password="${{ secrets.GH_PACKAGES_TOKEN }}"
+        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l/rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=${{ steps.refvar.outputs.gitRefName }} -Dquarkus.container-image.registry=docker.pkg.github.com"
 
       - name: Push latest Docker image (master) to GitHub Packages
         if: github.ref == 'refs/heads/master'
-        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l/rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=latest -Dquarkus.container-image.registry=docker.pkg.github.com -Dquarkus.container-image.username="rm3l" -Dquarkus.container-image.password="${{ secrets.GH_PACKAGES_TOKEN }}"
+        run: ./gradlew build -x test -Dquarkus.package.type=native -Dquarkus.native.container-build=false -Dquarkus.native.enable-http-url-handler=true -Dquarkus.native.enable-https-url-handler=true -Dquarkus.native.enable-all-security-services=true -Dquarkus.container-image.push=true -Dquarkus.container-image.group=rm3l/rm3l -Dquarkus.container-image.name=mac-oui -Dquarkus.container-image.tag=latest -Dquarkus.container-image.registry=docker.pkg.github.com"
