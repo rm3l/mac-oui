@@ -45,7 +45,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-scheduler'
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-kubernetes'
-    implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
+    implementation enforcedPlatform("io.quarkus:quarkus-universe-bom:${quarkusVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
 
     testImplementation 'io.quarkus:quarkus-junit5'
