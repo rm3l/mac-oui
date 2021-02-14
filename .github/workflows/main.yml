@@ -81,6 +81,10 @@ jobs:
           -Dquarkus.container-image.name=mac-oui \
           -Dquarkus.container-image.tag=latest
 
+    - name: Github Packages - Tag Docker image (latest)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+      run: docker image tag rm3l/mac-oui:latest docker.pkg.github.com/rm3l/mac-oui:latest
+
     - name: Docker Hub - Tag Docker image (tag)
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
       run: docker image tag rm3l/mac-oui:latest rm3l/mac-oui:${{ steps.refvar.outputs.gitRefName }}
