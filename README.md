@@ -96,7 +96,7 @@ all customizable values.
 
 For simplicity, this microservice exposes the following application endpoints:
 
-###`GET /?mac=<mac-address-or-oui-prefix>`
+### `GET /?mac=<mac-address-or-oui-prefix>`
 
 Example:
 
