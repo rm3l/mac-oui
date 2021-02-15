@@ -36,7 +36,7 @@ You can run your application in dev mode that enables live coding using:
 ./gradlew quarkusDev
 ```
 
-Then visit http://localhost:8080/q/swagger-ui for an interactive web UI playground.
+Then visit http://localhost:8080/q/swagger-ui (accessible only in dev mode) for an interactive web UI playground.
 
 ### Packaging and running the application
 
@@ -68,13 +68,13 @@ A Docker repository with the microservice can be found here: https://hub.docker.
 To fetch the docker image, run:
 
 ```bash
-docker pull rm3l/mac-oui
+docker image pull rm3l/mac-oui
 ```
 
 To run the server with the default options and expose it on port 8080, run:
 
 ```bash
-docker run -p 8080:8080 --rm rm3l/mac-oui
+docker container run --rm -p 8080:8080 rm3l/mac-oui
 ```
 
 ### Kubernetes
