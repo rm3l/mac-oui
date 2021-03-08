@@ -24,7 +24,7 @@
 plugins {
     id 'java'
     id "com.diffplug.spotless" version "5.10.2"
-    id 'io.quarkus' version "1.12.0.Final"
+    id 'io.quarkus' version "1.12.1.Final"
 }
 
 ext {
