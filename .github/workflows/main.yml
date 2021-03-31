@@ -59,13 +59,12 @@ jobs:
     - name: Install native-image
       run: gu install native-image
 
-    - uses: actions/cache@master
-      #Using master because of the multi-paths feature (reportedly only available on master at the moment)
+    - uses: actions/cache@v2
       with:
         path: |
-          ~/.gradle/wrapper
           ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
 
