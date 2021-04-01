@@ -84,17 +84,17 @@ jobs:
           -Dquarkus.container-image.name=mac-oui \
           -Dquarkus.container-image.tag=latest
 
-    - name: Github Container Registry - Tag Docker image (latest)
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
-      run: docker image tag rm3l/mac-oui:latest ghcr.io/rm3l/mac-oui:latest
+#     - name: Github Container Registry - Tag Docker image (latest)
+#       if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+#       run: docker image tag rm3l/mac-oui:latest ghcr.io/rm3l/mac-oui:latest
 
     - name: Docker Hub - Tag Docker image (tag)
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
       run: docker image tag rm3l/mac-oui:latest rm3l/mac-oui:${{ steps.refvar.outputs.gitRefName }}
 
-    - name: Github Container Registry - Tag Docker image (tag)
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-      run: docker image tag rm3l/mac-oui:latest ghcr.io/rm3l/mac-oui:${{ steps.refvar.outputs.gitRefName }}
+#     - name: Github Container Registry - Tag Docker image (tag)
+#       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+#       run: docker image tag rm3l/mac-oui:latest ghcr.io/rm3l/mac-oui:${{ steps.refvar.outputs.gitRefName }}
 
     - name: Login to Docker Hub
       if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
@@ -111,18 +111,18 @@ jobs:
       if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
       run: docker image push rm3l/mac-oui:latest
 
-    - name: Login to Github Container Registry
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GH_PACKAGES_TOKEN }}
+#     - name: Login to Github Container Registry
+#       if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+#       uses: docker/login-action@v1
+#       with:
+#         registry: ghcr.io
+#         username: ${{ github.repository_owner }}
+#         password: ${{ secrets.GH_PACKAGES_TOKEN }}
 
-    - name: Github Container Registry - Push Docker image (tag)
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-      run: docker image push ghcr.io/rm3l/mac-oui:${{ steps.refvar.outputs.gitRefName }}
+#     - name: Github Container Registry - Push Docker image (tag)
+#       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+#       run: docker image push ghcr.io/rm3l/mac-oui:${{ steps.refvar.outputs.gitRefName }}
 
-    - name: Github Container Registry - Push Docker image (latest)
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
-      run: docker image push ghcr.io/rm3l/mac-oui:latest
+#     - name: Github Container Registry - Push Docker image (latest)
+#       if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+#       run: docker image push ghcr.io/rm3l/mac-oui:latest
