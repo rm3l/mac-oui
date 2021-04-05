@@ -59,7 +59,7 @@ jobs:
     - name: Install native-image
       run: gu install native-image
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v2.1.4
       with:
         path: |
           ~/.gradle/caches
