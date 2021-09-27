@@ -48,7 +48,7 @@ jobs:
       run: echo "::set-output name=gitRefName::${GITHUB_REF#refs/*/}"
 
     - name: Set up GraalVM
-      uses: DeLaGuardo/setup-graalvm@4.0
+      uses: DeLaGuardo/setup-graalvm@5.0
       with:
         graalvm: 21.0.0.2
         # optional, available: java8 and java11, defaults to java8
