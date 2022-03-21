@@ -31,11 +31,11 @@ public class MacOuiResourceTest {
 
   @Test
   public void testLivenessHealthEndpoint() {
-    given().when().get("/health/live").then().statusCode(200);
+    given().when().get("/q/health/live").then().statusCode(200);
   }
 
   @Test
   public void testReadinessHealthEndpoint() {
-    given().when().get("/health/ready").then().statusCode(200);
+    given().when().get("/q/health/ready").then().statusCode(200);
   }
 }

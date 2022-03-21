@@ -24,11 +24,11 @@
 plugins {
     id 'java'
     id "com.diffplug.spotless" version "6.3.0"
-    id 'io.quarkus' version "1.13.7.Final"
+    id 'io.quarkus' version "2.7.5.Final"
 }
 
 ext {
-    quarkusVersion = '1.13.7.Final'
+    quarkusVersion = '2.7.5.Final'
 }
 
 repositories {
@@ -47,6 +47,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-kubernetes'
     implementation enforcedPlatform("io.quarkus:quarkus-universe-bom:${quarkusVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
