@@ -1,12 +1,16 @@
+variables:
+  gradle_cmd: ./gradlew --gradle-user-home=/home/user/.gradle --no-daemon --info --console=plain
 commands:
 - exec:
-    commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository compile
+    commandLine: "{{gradle_cmd}} quarkusGoOffline"
     component: tools
-    workingDir: ${PROJECT_SOURCE}
-  id: init-compile
+    workingDir: "${PROJECT_SOURCE}"
+  id: dl-gradle-deps
 - exec:
-    commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository quarkus:dev -Dquarkus.http.host=0.0.0.0
-      -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+    commandLine: |
+      {{gradle_cmd}} --watch-fs quarkusDev \
+        -DdebugHost=0.0.0.0 \
+        -Djava.util.logging.manager=org.jboss.logmanager.LogManager
     component: tools
     group:
       isDefault: true
@@ -15,8 +19,11 @@ commands:
     workingDir: ${PROJECT_SOURCE}
   id: dev-run
 - exec:
-    commandLine: mvn -Dmaven.repo.local=/home/user/.m2/repository quarkus:dev -Dquarkus.http.host=0.0.0.0
-      -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Ddebug=${DEBUG_PORT}
+    commandLine: |
+      {{gradle_cmd}} --watch-fs quarkusDev \
+        -DdebugHost=0.0.0.0 \
+        -Ddebug=${DEBUG_PORT} \
+          -Djava.util.logging.manager=org.jboss.logmanager.LogManager
     component: tools
     group:
       isDefault: true
@@ -38,16 +45,21 @@ components:
     volumeMounts:
     - name: m2
       path: /home/user/.m2
+    - name: gradle
+      path: /home/user/.gradle
   name: tools
 - name: m2
   volume:
     size: 3Gi
+- name: gradle
+  volume:
+    size: 3Gi
 events:
   postStart:
-  - init-compile
+  - dl-gradle-deps
 metadata:
-  description: Quarkus with Java
-  displayName: Quarkus Java
+  description: Quarkus with Java, built with Gradle
+  displayName: Quarkus Java with Gradle
   icon: https://design.jboss.org/quarkus/logo/final/SVG/quarkus_icon_rgb_default.svg
   language: java
   name: mac-oui
@@ -55,9 +67,10 @@ metadata:
   tags:
   - Java
   - Quarkus
+  - Gradle
   version: 1.1.0
   website: https://quarkus.io
-schemaVersion: 2.0.0
+schemaVersion: 2.1.0
 starterProjects:
 - name: community
   zip:
