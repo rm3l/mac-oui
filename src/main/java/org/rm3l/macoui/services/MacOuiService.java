@@ -68,7 +68,7 @@ public class MacOuiService {
   void scheduleDatabaseUpdate() {
     final var start = System.nanoTime();
     logger.info(
-        "Updating local database using {} RemoteMacOuiServiceClients...",
+        "Updating local database using {} RemoteMacOuiServiceClient(s)...",
         remoteMacOuiServiceClients.stream().count());
     try {
       remoteMacOuiServiceClients.stream()
@@ -84,7 +84,7 @@ public class MacOuiService {
                   return;
                 }
                 final var macOuiSet = (Set<MacOui>) serviceAndMacOuiSet[1];
-                logger.debug("{} returned {} records", remoteMacOuiServiceClient, macOuiSet.size());
+                logger.debug("{} returned {} record(s)", remoteMacOuiServiceClient, macOuiSet.size());
                 if (macOuiSet.size() == 0) {
                   return;
                 }
