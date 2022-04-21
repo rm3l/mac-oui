@@ -43,14 +43,9 @@ components:
     memoryLimit: 512Mi
     mountSources: true
     volumeMounts:
-    - name: m2
-      path: /home/user/.m2
     - name: gradle
       path: /home/user/.gradle
   name: tools
-- name: m2
-  volume:
-    size: 3Gi
 - name: gradle
   volume:
     size: 3Gi
