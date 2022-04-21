@@ -35,6 +35,8 @@ components:
     endpoints:
     - name: 8080-http
       targetPort: 8080
+    - name: 5858-tcp
+      targetPort: 5858
     env:
     - name: DEBUG_PORT
       value: "5858"
