@@ -31,3 +31,6 @@ nb-configuration.xml
 .gradle/
 build/
 .odo/odo-file-index.json
+
+.attach_*
+*~
