@@ -9,7 +9,6 @@ commands:
 - exec:
     commandLine: |
       {{gradle_cmd}} --watch-fs quarkusDev \
-        -DdebugHost=0.0.0.0 \
         -Djava.util.logging.manager=org.jboss.logmanager.LogManager
     component: tools
     group:
@@ -23,7 +22,7 @@ commands:
       {{gradle_cmd}} --watch-fs quarkusDev \
         -DdebugHost=0.0.0.0 \
         -Ddebug=${DEBUG_PORT} \
-          -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+        -Djava.util.logging.manager=org.jboss.logmanager.LogManager
     component: tools
     group:
       isDefault: true
