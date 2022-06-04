@@ -1,14 +1,19 @@
 variables:
-  gradle_cmd: ./gradlew --gradle-user-home=/home/user/.gradle --no-daemon --info --console=plain
+  GRADLE_CMD: ./gradlew --gradle-user-home=/home/user/.gradle --no-daemon --info --console=plain
+  CONTAINER_IMAGE: "localhost:5000/rm3l/mac-oui:latest"
+  OUTER_LOOP_NB_REPLICAS: "1"
+
 commands:
+
+### Inner Loop
 - exec:
-    commandLine: "{{gradle_cmd}} quarkusGoOffline"
+    commandLine: "{{GRADLE_CMD}} quarkusGoOffline"
     component: tools
     workingDir: "${PROJECT_SOURCE}"
   id: dl-gradle-deps
 - exec:
     commandLine: |
-      {{gradle_cmd}} --watch-fs quarkusDev \
+      {{GRADLE_CMD}} --watch-fs quarkusDev \
         -Djava.util.logging.manager=org.jboss.logmanager.LogManager
     component: tools
     group:
@@ -19,7 +24,7 @@ commands:
   id: dev-run
 - exec:
     commandLine: |
-      {{gradle_cmd}} --watch-fs quarkusDev \
+      {{GRADLE_CMD}} --watch-fs quarkusDev \
         -DdebugHost=0.0.0.0 \
         -Ddebug=${DEBUG_PORT} \
         -Djava.util.logging.manager=org.jboss.logmanager.LogManager
@@ -30,6 +35,23 @@ commands:
     hotReloadCapable: true
     workingDir: ${PROJECT_SOURCE}
   id: dev-debug
+
+### Outer Loop
+- id: build-image
+  apply:
+    component: outerloop-build
+- id: deployk8s
+  apply:
+    component: outerloop-deployment
+- id: deploy
+  composite:
+    commands:
+      - build-image
+      - deployk8s
+    group:
+      kind: deploy
+      isDefault: true
+
 components:
 - container:
     endpoints:
@@ -50,9 +72,46 @@ components:
 - name: gradle
   volume:
     size: 3Gi
+- name: outerloop-build
+  image:
+    imageName: "{{CONTAINER_IMAGE}}"
+    dockerfile:
+      # TODO This requires a Dockerfile,
+      # but might not be suitable for projects that intend to get images built with "gradle build"
+      # (with the help of Quarkus, but this might be applicable to other tools like Jib)
+      uri: ./src/main/docker/Dockerfile.jvm.with_build
+      buildContext: ${PROJECT_SOURCE}
+      rootRequired: false
+- name: outerloop-deployment
+  kubernetes:
+    inlined: |
+      kind: Deployment
+      apiVersion: apps/v1
+      metadata:
+        name: mac-oui
+      spec:
+        replicas: {{OUTER_LOOP_NB_REPLICAS}}
+        selector:
+          matchLabels:
+            app: node-app
+        template:
+          metadata:
+            labels:
+              app: node-app
+          spec:
+            containers:
+              - name: main
+                image: {{CONTAINER_IMAGE}}
+                resources:
+                  limits:
+                    memory: "128Mi"
+                    cpu: "500m"
+
+
 events:
   postStart:
   - dl-gradle-deps
+
 metadata:
   description: Quarkus with Java, built with Gradle
   displayName: Quarkus Java with Gradle
@@ -66,7 +125,7 @@ metadata:
   - Gradle
   version: 1.1.0
   website: https://quarkus.io
-schemaVersion: 2.1.0
+schemaVersion: 2.2.0
 starterProjects:
 - name: community
   zip:
