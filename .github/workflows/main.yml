@@ -52,7 +52,7 @@ jobs:
       with:
         graalvm: 22.3.0
         # optional, available: java8 and java11, defaults to java8
-        java: java11
+        java: java17
         # optional, available: amd64 and aarch64, defaults to amd64
         arch: amd64
 
