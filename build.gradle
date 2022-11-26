@@ -28,7 +28,7 @@ plugins {
 }
 
 ext {
-    bcprovVersion = '1.70'
+    bcprovVersion = '1.72'
 }
 
 repositories {
@@ -47,8 +47,8 @@ dependencies {
     implementation 'io.quarkus:quarkus-kubernetes'
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation "org.bouncycastle:bcprov-jdk15on:${bcprovVersion}"
-    implementation "org.bouncycastle:bcpkix-jdk15on:${bcprovVersion}"
+    implementation "org.bouncycastle:bcprov-jdk18on:${bcprovVersion}"
+    implementation "org.bouncycastle:bcpkix-jdk18on:${bcprovVersion}"
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
