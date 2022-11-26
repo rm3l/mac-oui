@@ -24,11 +24,11 @@
 plugins {
     id 'java'
     id "com.diffplug.spotless" version "6.12.0"
-    id 'io.quarkus' version "2.9.2.Final"
+    id 'io.quarkus' version "2.14.2.Final"
 }
 
 ext {
-    quarkusVersion = '2.9.2.Final'
+    bcprovVersion = '1.70'
 }
 
 repositories {
@@ -37,17 +37,18 @@ repositories {
 }
 
 dependencies {
+    implementation enforcedPlatform("io.quarkus.platform:quarkus-bom:2.14.2.Final")
     implementation 'io.quarkus:quarkus-smallrye-openapi'
     implementation 'io.quarkus:quarkus-smallrye-health'
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
     implementation 'io.quarkus:quarkus-jsonb'
-    implementation 'io.quarkus:quarkus-jsonb'
     implementation 'io.quarkus:quarkus-scheduler'
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-kubernetes'
-    implementation enforcedPlatform("io.quarkus:quarkus-universe-bom:${quarkusVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation "org.bouncycastle:bcprov-jdk15on:${bcprovVersion}"
+    implementation "org.bouncycastle:bcpkix-jdk15on:${bcprovVersion}"
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
