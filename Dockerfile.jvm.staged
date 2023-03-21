@@ -1,7 +1,6 @@
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.15-1.1678874698 AS builder
 
-ADD . /code
-WORKDIR /code
+COPY . .
 RUN ./gradlew build
 
 ENV LANGUAGE='en_US:en'
