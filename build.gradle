@@ -28,7 +28,7 @@ plugins {
 }
 
 ext {
-    bcprovVersion = '1.73'
+    bcprovVersion = '1.74'
 }
 
 repositories {
