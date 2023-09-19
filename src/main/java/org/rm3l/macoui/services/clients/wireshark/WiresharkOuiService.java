@@ -42,11 +42,14 @@ import org.rm3l.macoui.exceptions.MacOuiException;
 import org.rm3l.macoui.services.clients.RemoteMacOuiServiceClient;
 import org.rm3l.macoui.services.data.MacOui;
 
-/** Fetches data from https://gitlab.com/wireshark/wireshark/raw/master/manuf */
+/**
+ * Fetches data from <a href="https://gitlab.com/wireshark/wireshark/-/raw/v4.0.8/manuf">Wireshark
+ * list</a>
+ */
 @ApplicationScoped
 public class WiresharkOuiService implements RemoteMacOuiServiceClient {
 
-  static final String DATA_URL = "https://gitlab.com/wireshark/wireshark/raw/master/manuf";
+  static final String DATA_URL = "https://gitlab.com/wireshark/wireshark/-/raw/v4.0.8/manuf";
 
   HttpClient httpClient;
 
