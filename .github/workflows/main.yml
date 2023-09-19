@@ -48,13 +48,11 @@ jobs:
       run: echo "::set-output name=gitRefName::${GITHUB_REF#refs/*/}"
 
     - name: Set up GraalVM
-      uses: DeLaGuardo/setup-graalvm@5.0
+      uses: graalvm/setup-graalvm@v1
       with:
-        graalvm: 22.3.0
-        # optional, available: java8 and java11, defaults to java8
-        java: java17
-        # optional, available: amd64 and aarch64, defaults to amd64
-        arch: amd64
+        distribution: 'graalvm-community'
+        java-version: '17'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install native-image
       run: gu install native-image
