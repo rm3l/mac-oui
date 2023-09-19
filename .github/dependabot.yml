@@ -34,3 +34,8 @@ updates:
   - rm3l
   labels:
   - dependencies
+  groups:
+    # See https://github.blog/changelog/2023-06-30-grouped-version-updates-for-dependabot-public-beta/
+    quarkus-dependencies:
+      patterns:
+        - "io.quarkus*"
