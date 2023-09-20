@@ -21,10 +21,10 @@
 // SOFTWARE.
 package org.rm3l.macoui.services.data;
 
+import jakarta.json.bind.annotation.JsonbNillable;
+import jakarta.json.bind.annotation.JsonbProperty;
 import java.util.Objects;
 import java.util.Set;
-import javax.json.bind.annotation.JsonbNillable;
-import javax.json.bind.annotation.JsonbProperty;
 
 @JsonbNillable
 public class MacOui {

@@ -21,8 +21,8 @@
 // SOFTWARE.
 package org.rm3l.macoui.services.clients;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.rm3l.macoui.services.data.MacOui;
 
 public interface RemoteMacOuiServiceClient {

@@ -21,8 +21,8 @@
 // SOFTWARE.
 package org.rm3l.macoui.exceptions;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 public class ItemNotFoundException extends MacOuiException {
 

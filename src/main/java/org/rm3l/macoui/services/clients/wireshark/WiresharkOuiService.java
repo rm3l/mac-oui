@@ -21,6 +21,9 @@
 // SOFTWARE.
 package org.rm3l.macoui.services.clients.wireshark;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -32,9 +35,6 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.validation.constraints.NotNull;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.Liveness;
