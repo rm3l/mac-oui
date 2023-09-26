@@ -64,7 +64,7 @@ public class MacOuiService {
   }
 
   @SuppressWarnings({"unchecked", "unused"})
-  @Scheduled(cron = "${mac-oui.database.updateFrequency}")
+  @Scheduled(cron = "{mac-oui.database.updateFrequency}")
   void scheduleDatabaseUpdate() {
     final var start = System.nanoTime();
     logger.info(
