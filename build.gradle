@@ -24,7 +24,7 @@
 plugins {
     id 'java'
     id "com.diffplug.spotless" version "6.23.3"
-    id 'io.quarkus' version "3.6.4"
+    id 'io.quarkus' version "3.6.5"
 }
 
 ext {
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation enforcedPlatform("io.quarkus.platform:quarkus-bom:3.6.4")
+    implementation enforcedPlatform("io.quarkus.platform:quarkus-bom:3.6.5")
     implementation 'io.quarkus:quarkus-smallrye-openapi'
     implementation 'io.quarkus:quarkus-smallrye-health'
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
