@@ -23,7 +23,7 @@
 
 plugins {
     id 'java'
-    id "com.diffplug.spotless" version "6.24.0"
+    id "com.diffplug.spotless" version "6.25.0"
     id 'io.quarkus' version "3.6.6"
 }
 
