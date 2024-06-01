@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation enforcedPlatform("io.quarkus.platform:quarkus-bom:3.10.2")
+    implementation enforcedPlatform("io.quarkus.platform:quarkus-bom:3.11.0")
     implementation 'io.quarkus:quarkus-smallrye-openapi'
     implementation 'io.quarkus:quarkus-smallrye-health'
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
