@@ -85,7 +85,7 @@ public class MacOuiService {
                 }
                 final var macOuiSet = (Set<MacOui>) serviceAndMacOuiSet[1];
                 logger.debug("{} returned {} records", remoteMacOuiServiceClient, macOuiSet.size());
-                if (macOuiSet.size() == 0) {
+                if (macOuiSet.isEmpty()) {
                   return;
                 }
                 synchronized (database) {
