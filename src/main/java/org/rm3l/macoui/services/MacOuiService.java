@@ -142,7 +142,9 @@ public class MacOuiService {
 
     @Override
     public HealthCheckResponse call() {
-      logger.info("Readiness check on {}", this);
+      if (logger.isDebugEnabled()) {
+        logger.debug("Readiness check on {}", this);
+      }
       final var healthCheckResponseBuilder = HealthCheckResponse.named("mac-oui-lookup");
       final var lookup = macOuiService.lookup(HEALTH_CHECK_MAC_ADDR_PREFIX);
       if (lookup.isPresent()) {
