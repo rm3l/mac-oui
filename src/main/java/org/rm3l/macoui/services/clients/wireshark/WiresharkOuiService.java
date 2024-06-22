@@ -105,45 +105,4 @@ public class WiresharkOuiService implements RemoteMacOuiServiceClient {
       throw new MacOuiException(e);
     }
   }
-
-  @ApplicationScoped
-  @Liveness
-  public static class HealthProbe implements HealthCheck {
-
-    WiresharkOuiService wiresharkOuiService;
-
-    HttpClient healthHttpClient;
-
-    public HealthProbe(WiresharkOuiService wiresharkOuiService) {
-      this.wiresharkOuiService = wiresharkOuiService;
-    }
-
-    @PostConstruct
-    void init() {
-      this.healthHttpClient = HttpClient.newBuilder().followRedirects(Redirect.NORMAL).build();
-    }
-
-    @Override
-    public HealthCheckResponse call() {
-      final var responseBuilder = HealthCheckResponse.named("wireshark");
-      try {
-        final var headRequest =
-            HttpRequest.newBuilder()
-                .method("HEAD", BodyPublishers.noBody())
-                .uri(URI.create(DATA_URL))
-                .timeout(Duration.ofSeconds(5))
-                .build();
-        final var statusCode =
-            healthHttpClient.send(headRequest, BodyHandlers.discarding()).statusCode();
-        if (statusCode < 200 || statusCode > 299) {
-          responseBuilder.down().withData("status_code", statusCode);
-        } else {
-          responseBuilder.up();
-        }
-      } catch (final Exception e) {
-        responseBuilder.down().withData("error", e.getMessage());
-      }
-      return responseBuilder.build();
-    }
-  }
 }
