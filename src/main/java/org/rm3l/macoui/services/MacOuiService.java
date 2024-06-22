@@ -117,10 +117,7 @@ public class MacOuiService {
     if (filterSanitized.length() < 6) {
       throw new IllegalArgumentException("Invalid MAC filter data: '" + filter + "'");
     }
-    final var filterPrefix = filterSanitized.substring(0, 6);
-    synchronized (database) {
-      return Optional.ofNullable(database.get(filterPrefix.toLowerCase()));
-    }
+    return Optional.ofNullable(database.get(filterSanitized.substring(0, 6).toLowerCase()));
   }
 
   private String sanitizeMac(@NotNull final String mac) {
