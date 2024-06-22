@@ -48,8 +48,8 @@ public class MacOuiExceptionMapper implements ExceptionMapper<Exception> {
       code = 404;
     }
     final var rootCauseMessage = ExceptionUtils.getRootCauseMessage(exception);
-    logger.info("Exception caught: {} {}", exception.getClass(), rootCauseMessage);
     if (logger.isDebugEnabled()) {
+      logger.debug("Exception caught: {} {}", exception.getClass(), rootCauseMessage);
       logger.debug(exception.getMessage(), exception);
     }
     return Response.status(code).entity(Map.of("code", code, "error", rootCauseMessage)).build();
