@@ -46,7 +46,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-container-image-jib'
     implementation 'io.quarkus:quarkus-kubernetes'
     implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
     implementation "org.bouncycastle:bcprov-jdk18on:${bcprovVersion}"
     implementation "org.bouncycastle:bcpkix-jdk18on:${bcprovVersion}"
 
